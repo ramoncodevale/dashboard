@@ -2,120 +2,115 @@ import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd"
 import { useState, useCallback, useEffect } from "react"
 import Button from "./button"
 import Card from "./card"
+import Carousel from "./carousel"
 
 const Dashboard = () => {
   const [modal, setModal] = useState(false)
   const [isCarousel, setIsCarousel] = useState(false)
-  const [sections, setSections] = useState(() => {
-    // Recupera as seções do localStorage, se existirem
-    const savedSections = localStorage.getItem("sections")
-    return savedSections
-      ? JSON.parse(savedSections)
-      : [
-          {
-            id: "todo",
-            title: "Tarefas",
-            cards: [
-              {
-                id: "card-1",
-                title: "Comprar mantimentos",
-                content: "Ir ao mercado",
-                size: "small",
-              },
-              {
-                id: "card-2",
-                title: "Reunião com equipe",
-                content: "Discutir o projeto",
-                size: "small",
-              },
-              {
-                id: "card-3",
-                title: "Estudar React",
-                content: "Revisar hooks",
-                size: "small",
-              },
-            ],
-          },
-          {
-            id: "in-design",
-            title: "Design",
-            cards: [
-              {
-                id: "card-4",
-                title: "Criar wireframe",
-                content: "Desenhar layout",
-                size: "small",
-              },
-            ],
-          },
-          {
-            id: "in-development",
-            title: "In-Development",
-            cards: [
-              {
-                id: "card-5",
-                title: "Tela de login",
-                content: "Desenvolver login",
-                size: "small",
-              },
-              {
-                id: "card-6",
-                title: "API de filmes",
-                content: "Integrar TMDB",
-                size: "small",
-              },
-            ],
-          },
-          {
-            id: "in-progress",
-            title: "Em Andamento",
-            cards: [
-              {
-                id: "card-7",
-                title: "Testar funcionalidades",
-                content: "Escrever testes",
-                size: "small",
-              },
-              {
-                id: "card-8",
-                title: "Revisar código",
-                content: "Verificar código",
-                size: "small",
-              },
-            ],
-          },
-          {
-            id: "carousel",
-            title: "",
-            cards: [
-              {
-                id: "carousel-card-1",
-                title: "Finalizar documentação",
-                content: "Completar docs",
-                size: "small",
-              },
-              {
-                id: "carousel-card-2",
-                title: "Configurar CI/CD",
-                content: "Configurar pipeline",
-                size: "small",
-              },
-              {
-                id: "carousel-card-3",
-                title: "Refatorar código",
-                content: "Melhorar desempenho",
-                size: "small",
-              },
-              {
-                id: "carousel-card-4",
-                title: "Revisar design de UI",
-                content: "Verificar interface",
-                size: "small",
-              },
-            ],
-          },
-        ]
-  })
+  const [sections, setSections] = useState([
+    {
+      id: "todo",
+      title: "Tarefas",
+      cards: [
+        {
+          id: "card-1",
+          title: "Comprar mantimentos",
+          content: "Ir ao mercado",
+          size: "small",
+        },
+        {
+          id: "card-2",
+          title: "Reunião com equipe",
+          content: "Discutir o projeto",
+          size: "small",
+        },
+        {
+          id: "card-3",
+          title: "Estudar React",
+          content: "Revisar hooks",
+          size: "small",
+        },
+      ],
+    },
+    {
+      id: "in-design",
+      title: "Design",
+      cards: [
+        {
+          id: "card-4",
+          title: "Criar wireframe",
+          content: "Desenhar layout",
+          size: "small",
+        },
+      ],
+    },
+    {
+      id: "in-development",
+      title: "In-Development",
+      cards: [
+        {
+          id: "card-5",
+          title: "Tela de login",
+          content: "Desenvolver login",
+          size: "small",
+        },
+        {
+          id: "card-6",
+          title: "API de filmes",
+          content: "Integrar TMDB",
+          size: "small",
+        },
+      ],
+    },
+    {
+      id: "in-progress",
+      title: "Em Andamento",
+      cards: [
+        {
+          id: "card-7",
+          title: "Testar funcionalidades",
+          content: "Escrever testes",
+          size: "small",
+        },
+        {
+          id: "card-8",
+          title: "Revisar código",
+          content: "Verificar código",
+          size: "small",
+        },
+      ],
+    },
+    {
+      id: "carousel",
+      title: "",
+      cards: [
+        {
+          id: "carousel-card-1",
+          title: "Finalizar documentação",
+          content: "Completar docs",
+          size: "small",
+        },
+        {
+          id: "carousel-card-2",
+          title: "Configurar CI/CD",
+          content: "Configurar pipeline",
+          size: "small",
+        },
+        {
+          id: "carousel-card-3",
+          title: "Refatorar código",
+          content: "Melhorar desempenho",
+          size: "small",
+        },
+        {
+          id: "carousel-card-4",
+          title: "Revisar design de UI",
+          content: "Verificar interface",
+          size: "small",
+        },
+      ],
+    },
+  ])
 
   const [newCardTitle, setNewCardTitle] = useState("")
   const [newCardContent, setNewCardContent] = useState("")
@@ -141,10 +136,7 @@ const Dashboard = () => {
       const [movedCard] = sourceSection.cards.splice(source.index, 1)
       destinationSection.cards.splice(destination.index, 0, movedCard)
 
-      // Atualiza o state e salva no localStorage
-      const updatedSections = [...sections]
-      setSections(updatedSections)
-      localStorage.setItem("sections", JSON.stringify(updatedSections))
+      setSections([...sections])
     },
     [sections],
   )
@@ -159,17 +151,13 @@ const Dashboard = () => {
       size: "small",
     }
 
-    setSections((prevSections) => {
-      const updatedSections = prevSections.map((section) =>
+    setSections((prevSections) =>
+      prevSections.map((section) =>
         section.id === "carousel"
           ? { ...section, cards: [...section.cards, newCard] }
           : section,
-      )
-
-      // Salva no localStorage
-      localStorage.setItem("sections", JSON.stringify(updatedSections))
-      return updatedSections
-    })
+      ),
+    )
 
     setNewCardTitle("")
     setNewCardContent("")
@@ -259,7 +247,7 @@ const Dashboard = () => {
         </div>
       )}
 
-      <div className="flex flex-wrap gap-5 pt-5">
+      <div className="flex flex-1 flex-wrap items-stretch gap-[10px] pt-5">
         <DragDropContext onDragEnd={onDragEnd}>
           {sections.map((section) => (
             <Droppable
@@ -272,48 +260,50 @@ const Dashboard = () => {
                   ref={provided.innerRef}
                   {...provided.droppableProps}
                   className={`h-auto w-full bg-[#f3f5f6] p-3 shadow-md transition-all duration-300 ease-in-out ${
-                    section.id === "carousel" ? "overflow-x-auto" : "w-[300px]"
+                    section.id === "carousel" ? "overflow-x-auto" : ""
                   }`}
                 >
                   {section.id !== "carousel" && (
-                    <div className="flex flex-col">
-                      <h3 className="mb-3 text-lg font-bold text-gray-800">
-                        {section.title}
-                      </h3>
-                      <div
-                        className={`${
-                          section.id === "todo"
-                            ? "grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
-                            : ""
-                        }`}
-                      >
-                        {section.cards.map((card, index) => (
-                          <Draggable
-                            key={card.id}
-                            draggableId={card.id}
-                            index={index}
-                          >
-                            {(provided) => (
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                className="mb-3"
-                              >
-                                <Card
-                                  title={card.title}
-                                  content={card.content}
-                                  size={card.size}
-                                  onRemove={() =>
-                                    handleRemoveCard(section.id, card.id)
-                                  }
-                                />
-                              </div>
-                            )}
-                          </Draggable>
-                        ))}
+                    <>
+                      <div className="flex flex-col">
+                        <h3 className="mb-3 text-lg font-bold text-gray-800">
+                          {section.title}
+                        </h3>
+                        <div
+                          className={`${
+                            section.id === "todo"
+                              ? "grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+                              : "grid grid-cols-1 gap-4"
+                          }`}
+                        >
+                          {section.cards.map((card, index) => (
+                            <Draggable
+                              key={card.id}
+                              draggableId={card.id}
+                              index={index}
+                            >
+                              {(provided) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  className="mb-3"
+                                >
+                                  <Card
+                                    title={card.title}
+                                    content={card.content}
+                                    size={card.size}
+                                    onRemove={() =>
+                                      handleRemoveCard(section.id, card.id)
+                                    }
+                                  />
+                                </div>
+                              )}
+                            </Draggable>
+                          ))}
+                        </div>
                       </div>
-                    </div>
+                    </>
                   )}
 
                   {section.id === "carousel" && (
