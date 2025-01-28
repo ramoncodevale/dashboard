@@ -2,13 +2,15 @@ import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd"
 import { useState, useCallback, useEffect } from "react"
 import Button from "./button"
 import Card from "./card"
+import Carousel from "./carousel"
 
 const Dashboard = () => {
   const [modal, setModal] = useState(false)
+  const [isCarousel, setIsCarousel] = useState(false)
   const [sections, setSections] = useState([
     {
       id: "todo",
-      title: "To-do-List",
+      title: "Tarefas",
       cards: [
         {
           id: "card-1",
@@ -32,7 +34,7 @@ const Dashboard = () => {
     },
     {
       id: "in-design",
-      title: "In-Design",
+      title: "Design",
       cards: [
         {
           id: "card-4",
@@ -62,7 +64,7 @@ const Dashboard = () => {
     },
     {
       id: "in-progress",
-      title: "In-Progress",
+      title: "Em Andamento",
       cards: [
         {
           id: "card-7",
@@ -86,7 +88,7 @@ const Dashboard = () => {
           id: "carousel-card-1",
           title: "Finalizar documentação",
           content: "Completar a documentação do projeto",
-          size: "medium",
+          size: "small",
         },
         {
           id: "carousel-card-2",
@@ -98,13 +100,13 @@ const Dashboard = () => {
           id: "carousel-card-3",
           title: "Refatorar código",
           content: "Melhorar o desempenho do código de autenticação",
-          size: "large",
+          size: "small",
         },
         {
           id: "carousel-card-4",
           title: "Revisar design de UI",
           content: "Verificar se a interface está intuitiva e moderna",
-          size: "medium",
+          size: "small",
         },
         {
           id: "carousel-card-5",
@@ -116,13 +118,13 @@ const Dashboard = () => {
           id: "carousel-card-6",
           title: "Atualizar dependências",
           content: "Atualizar bibliotecas e dependências do projeto",
-          size: "large",
+          size: "small",
         },
         {
           id: "carousel-card-7",
           title: "Analisar métricas de desempenho",
           content: "Recolher e analisar dados de uso do aplicativo",
-          size: "medium",
+          size: "small",
         },
         {
           id: "carousel-card-8",
@@ -134,13 +136,12 @@ const Dashboard = () => {
           id: "carousel-card-9",
           title: "Revisar testes automatizados",
           content: "Verificar cobertura de testes e adicionar novos",
-          size: "large",
+          size: "small",
         },
       ],
     },
   ])
 
-  const [isCarousel, setIsCarousel] = useState(false)
   const [newCardTitle, setNewCardTitle] = useState("")
   const [newCardContent, setNewCardContent] = useState("")
 
@@ -266,7 +267,7 @@ const Dashboard = () => {
 
       {!modal && (
         <div className="flex items-center justify-between">
-          <h1 className="text-4xl font-bold text-white">Ramon Dashboard</h1>
+          <h1 className="text-4xl font-bold text-white">Dashboard</h1>
           <Button
             className="h-[32px] w-[130px] transition-all duration-200 ease-in-out"
             onClick={handleShowModal}
@@ -276,7 +277,7 @@ const Dashboard = () => {
         </div>
       )}
 
-      <div className="flex flex-1 flex-wrap items-stretch gap-[10px] pt-10">
+      <div className="flex flex-1 flex-wrap items-stretch gap-[10px] pt-5">
         <DragDropContext onDragEnd={onDragEnd}>
           {sections.map((section) => (
             <Droppable
@@ -294,41 +295,43 @@ const Dashboard = () => {
                 >
                   {section.id !== "carousel" && (
                     <>
-                      <h3 className="mb-3 text-lg font-bold text-gray-800">
-                        {section.title}
-                      </h3>
-                      <div
-                        className={`${
-                          section.id === "todo"
-                            ? "grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
-                            : ""
-                        }`}
-                      >
-                        {section.cards.map((card, index) => (
-                          <Draggable
-                            key={card.id}
-                            draggableId={card.id}
-                            index={index}
-                          >
-                            {(provided) => (
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                className="mb-3"
-                              >
-                                <Card
-                                  title={card.title}
-                                  content={card.content}
-                                  size={card.size}
-                                  onRemove={() =>
-                                    handleRemoveCard(section.id, card.id)
-                                  }
-                                />
-                              </div>
-                            )}
-                          </Draggable>
-                        ))}
+                      <div className="flex flex-col">
+                        <h3 className="mb-3 text-lg font-bold text-gray-800">
+                          {section.title}
+                        </h3>
+                        <div
+                          className={`${
+                            section.id === "todo"
+                              ? "grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+                              : ""
+                          }`}
+                        >
+                          {section.cards.map((card, index) => (
+                            <Draggable
+                              key={card.id}
+                              draggableId={card.id}
+                              index={index}
+                            >
+                              {(provided) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  className="mb-3"
+                                >
+                                  <Card
+                                    title={card.title}
+                                    content={card.content}
+                                    size={card.size}
+                                    onRemove={() =>
+                                      handleRemoveCard(section.id, card.id)
+                                    }
+                                  />
+                                </div>
+                              )}
+                            </Draggable>
+                          ))}
+                        </div>
                       </div>
                     </>
                   )}
@@ -349,10 +352,9 @@ const Dashboard = () => {
                                   {...provided.dragHandleProps}
                                   className="mr-4 flex h-[300px] w-[250px] flex-col" // Tamanho fixo com Tailwind
                                 >
-                                  <Card
+                                  <Carousel
                                     title={card.title}
                                     content={card.content}
-                                    size={card.size}
                                     onRemove={() =>
                                       handleRemoveCard(section.id, card.id)
                                     }
