@@ -6,7 +6,7 @@ interface CardProps {
 
 const Card = ({ title, content, onRemove }: CardProps) => {
   return (
-    <div className="mt-5 h-auto w-full max-w-md transform rounded-lg border-b-8 border-[#0079bf] bg-white p-4 shadow-md transition-all duration-150 hover:scale-105 hover:shadow-lg">
+    <div className="h-[177px] w-full transform rounded-lg border-b-[20px] border-gray-400 bg-[#fff] p-4 shadow-md transition-all duration-150 hover:scale-105 hover:shadow-lg">
       <div className="flex flex-col gap-3">
         <h4 className="text-lg font-semibold text-[#333]">{title}</h4>
         <p className="text-sm text-[#5e5e5e]">{content}</p>

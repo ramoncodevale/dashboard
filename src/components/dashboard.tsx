@@ -163,7 +163,7 @@ const Dashboard = () => {
     setNewCardContent("")
   }, [newCardTitle, newCardContent])
 
-  const handleRemoveCard = useCallback((sectionId, cardId) => {
+  const handleRemoveCard = useCallback((sectionId: string, cardId: string) => {
     if (window.confirm("Você tem certeza que deseja remover este cartão?")) {
       setSections((prevSections) =>
         prevSections.map((section) =>
@@ -217,16 +217,12 @@ const Dashboard = () => {
               />
               <div className="flex justify-end gap-2">
                 <Button
-                  type="button"
                   className="h-[32px] w-[100px] bg-gray-300 text-gray-700 hover:bg-gray-400"
                   onClick={handleCloseModal}
                 >
                   Cancelar
                 </Button>
-                <Button
-                  type="submit"
-                  className="h-[32px] w-[130px] bg-blue-500 text-white hover:bg-blue-600"
-                >
+                <Button className="h-[32px] w-[130px] bg-blue-500 text-white hover:bg-blue-600">
                   Adicionar
                 </Button>
               </div>
@@ -247,7 +243,7 @@ const Dashboard = () => {
         </div>
       )}
 
-      <div className="flex flex-1 flex-wrap items-stretch gap-[10px] pt-5">
+      <div className="flex flex-wrap items-start gap-[10px] pt-5">
         <DragDropContext onDragEnd={onDragEnd}>
           {sections.map((section) => (
             <Droppable
@@ -259,7 +255,7 @@ const Dashboard = () => {
                 <section
                   ref={provided.innerRef}
                   {...provided.droppableProps}
-                  className={`h-auto w-full bg-[#f3f5f6] p-3 shadow-md transition-all duration-300 ease-in-out ${
+                  className={`flex h-auto w-full flex-row bg-[#f3f5f6] p-3 shadow-md transition-all duration-300 ease-in-out ${
                     section.id === "carousel" ? "overflow-x-auto" : ""
                   }`}
                 >
@@ -269,13 +265,7 @@ const Dashboard = () => {
                         <h3 className="mb-3 text-lg font-bold text-gray-800">
                           {section.title}
                         </h3>
-                        <div
-                          className={`${
-                            section.id === "todo"
-                              ? "grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
-                              : "grid grid-cols-1 gap-4"
-                          }`}
-                        >
+                        <div className="flex gap-4">
                           {section.cards.map((card, index) => (
                             <Draggable
                               key={card.id}
@@ -292,7 +282,6 @@ const Dashboard = () => {
                                   <Card
                                     title={card.title}
                                     content={card.content}
-                                    size={card.size}
                                     onRemove={() =>
                                       handleRemoveCard(section.id, card.id)
                                     }
@@ -321,11 +310,12 @@ const Dashboard = () => {
                               {...provided.dragHandleProps}
                               className="flex-shrink-0"
                             >
-                              <Card
+                              <Carousel
                                 title={card.title}
                                 content={card.content}
-                                size={card.size}
-                                className="h-[120px] w-[180px]"
+                                onRemove={() =>
+                                  handleRemoveCard(section.id, card.id)
+                                }
                               />
                             </div>
                           )}
