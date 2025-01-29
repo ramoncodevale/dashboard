@@ -3,14 +3,21 @@ import { useState, useCallback, useEffect } from "react"
 import Button from "./button"
 import Card from "./card"
 import Carousel from "./carousel"
+import { DropResult } from "react-beautiful-dnd"
 
 const Dashboard = () => {
   const [modal, setModal] = useState(false)
   const [isCarousel, setIsCarousel] = useState(false)
+  const [deleteModal, setDeleteModal] = useState({
+    open: false,
+    sectionId: "",
+    cardId: "",
+  })
+
   const [sections, setSections] = useState([
     {
       id: "todo",
-      title: "Tarefas",
+      title: "A fazer",
       cards: [
         {
           id: "card-1",
@@ -18,23 +25,18 @@ const Dashboard = () => {
           content: "Ir ao mercado",
           size: "small",
         },
+
         {
           id: "card-2",
-          title: "Reunião com equipe",
-          content: "Discutir o projeto",
-          size: "small",
-        },
-        {
-          id: "card-3",
           title: "Estudar React",
           content: "Revisar hooks",
-          size: "small",
+          size: "large",
         },
       ],
     },
     {
       id: "in-design",
-      title: "Design",
+      title: "Em Design",
       cards: [
         {
           id: "card-4",
@@ -46,31 +48,25 @@ const Dashboard = () => {
     },
     {
       id: "in-development",
-      title: "In-Development",
+      title: "Em Desenvolvimento",
       cards: [
         {
           id: "card-5",
-          title: "Tela de login",
-          content: "Desenvolver login",
-          size: "small",
-        },
-        {
-          id: "card-6",
           title: "API de filmes",
           content: "Integrar TMDB",
-          size: "small",
+          size: "large",
         },
       ],
     },
     {
       id: "in-progress",
-      title: "Em Andamento",
+      title: "Em Progresso",
       cards: [
         {
           id: "card-7",
           title: "Testar funcionalidades",
           content: "Escrever testes",
-          size: "small",
+          size: "large",
         },
         {
           id: "card-8",
@@ -82,7 +78,7 @@ const Dashboard = () => {
     },
     {
       id: "carousel",
-      title: "",
+      title: "Outras Tarefas",
       cards: [
         {
           id: "carousel-card-1",
@@ -123,7 +119,7 @@ const Dashboard = () => {
   }, [sections])
 
   const onDragEnd = useCallback(
-    ({ source, destination }) => {
+    ({ source, destination }: DropResult) => {
       if (!destination) return
 
       const sourceSection = sections.find((s) => s.id === source.droppableId)
@@ -163,20 +159,25 @@ const Dashboard = () => {
     setNewCardContent("")
   }, [newCardTitle, newCardContent])
 
-  const handleRemoveCard = useCallback((sectionId: string, cardId: string) => {
-    if (window.confirm("Você tem certeza que deseja remover este cartão?")) {
-      setSections((prevSections) =>
-        prevSections.map((section) =>
-          section.id === sectionId
-            ? {
-                ...section,
-                cards: section.cards.filter((card) => card.id !== cardId),
-              }
-            : section,
-        ),
-      )
-    }
-  }, [])
+  const confirmDeleteCard = (sectionId: string, cardId: string) => {
+    setDeleteModal({ open: true, sectionId, cardId })
+  }
+
+  const handleDeleteCard = () => {
+    setSections((prevSections) =>
+      prevSections.map((section) =>
+        section.id === deleteModal.sectionId
+          ? {
+              ...section,
+              cards: section.cards.filter(
+                (card) => card.id !== deleteModal.cardId,
+              ),
+            }
+          : section,
+      ),
+    )
+    setDeleteModal({ open: false, sectionId: "", cardId: "" })
+  }
 
   const handleShowModal = () => setModal(true)
   const handleCloseModal = () => setModal(false)
@@ -217,12 +218,12 @@ const Dashboard = () => {
               />
               <div className="flex justify-end gap-2">
                 <Button
-                  className="h-[32px] w-[100px] bg-gray-300 text-gray-700 hover:bg-gray-400"
+                  className="bg-gray-300 px-5 py-2.5 text-gray-700 hover:bg-gray-400"
                   onClick={handleCloseModal}
                 >
                   Cancelar
                 </Button>
-                <Button className="h-[32px] w-[130px] bg-blue-500 text-white hover:bg-blue-600">
+                <Button className="bg-blue-500 px-5 py-2.5 text-white hover:bg-blue-600">
                   Adicionar
                 </Button>
               </div>
@@ -231,11 +232,41 @@ const Dashboard = () => {
         </>
       )}
 
+      {deleteModal.open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="rounded-lg bg-white p-6 shadow-lg">
+            <h2 className="mb-4 text-lg font-bold text-gray-700">
+              Confirmar Exclusão
+            </h2>
+            <p className="mb-4 text-gray-600">
+              Você tem certeza que deseja remover este cartão?
+            </p>
+            <div className="flex justify-end gap-2">
+              <Button
+                onClick={() =>
+                  setDeleteModal({ open: false, sectionId: "", cardId: "" })
+                }
+                className="bg-gray-300 px-5 py-2.5"
+              >
+                Cancelar
+              </Button>
+              <Button
+                onClick={handleDeleteCard}
+                className="px-5 py-2.5 text-white"
+                variant="danger"
+              >
+                Remover
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {!modal && (
         <div className="flex items-center justify-between">
           <h1 className="text-4xl font-bold text-white">Dashboard</h1>
           <Button
-            className="h-[32px] w-[130px] transition-all duration-200 ease-in-out"
+            className="px-5 py-2.5 transition-all duration-200 ease-in-out"
             onClick={handleShowModal}
           >
             Adicionar Cartão
@@ -243,7 +274,7 @@ const Dashboard = () => {
         </div>
       )}
 
-      <div className="flex flex-wrap items-start gap-[10px] pt-5">
+      <div className="grid grid-cols-1 items-start gap-2 pt-3 md:grid-cols-3 lg:grid-cols-4">
         <DragDropContext onDragEnd={onDragEnd}>
           {sections.map((section) => (
             <Droppable
@@ -255,42 +286,43 @@ const Dashboard = () => {
                 <section
                   ref={provided.innerRef}
                   {...provided.droppableProps}
-                  className={`flex h-auto w-full flex-row bg-[#f3f5f6] p-3 shadow-md transition-all duration-300 ease-in-out ${
-                    section.id === "carousel" ? "overflow-x-auto" : ""
+                  className={`h-auto items-start rounded-lg bg-[#f3f5f6] p-3 shadow-md transition-all duration-300 ease-in-out ${
+                    section.id === "carousel"
+                      ? "overflow-x-auto lg:col-span-4"
+                      : ""
                   }`}
                 >
                   {section.id !== "carousel" && (
                     <>
-                      <div className="flex flex-col">
-                        <h3 className="mb-3 text-lg font-bold text-gray-800">
-                          {section.title}
-                        </h3>
-                        <div className="flex gap-4">
-                          {section.cards.map((card, index) => (
-                            <Draggable
-                              key={card.id}
-                              draggableId={card.id}
-                              index={index}
-                            >
-                              {(provided) => (
-                                <div
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                  className="mb-3"
-                                >
-                                  <Card
-                                    title={card.title}
-                                    content={card.content}
-                                    onRemove={() =>
-                                      handleRemoveCard(section.id, card.id)
-                                    }
-                                  />
-                                </div>
-                              )}
-                            </Draggable>
-                          ))}
-                        </div>
+                      <h3 className="mb-3 text-lg font-bold text-gray-800">
+                        {section.title}
+                      </h3>
+                      <div className="flex flex-col gap-2">
+                        {section.cards.map((card, index) => (
+                          <Draggable
+                            key={card.id}
+                            draggableId={card.id}
+                            index={index}
+                          >
+                            {(provided) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                                className="mb-3"
+                              >
+                                <Card
+                                  title={card.title}
+                                  content={card.content}
+                                  size={card.size}
+                                  onRemove={() =>
+                                    confirmDeleteCard(section.id, card.id)
+                                  }
+                                />
+                              </div>
+                            )}
+                          </Draggable>
+                        ))}
                       </div>
                     </>
                   )}
@@ -314,7 +346,7 @@ const Dashboard = () => {
                                 title={card.title}
                                 content={card.content}
                                 onRemove={() =>
-                                  handleRemoveCard(section.id, card.id)
+                                  confirmDeleteCard(section.id, card.id)
                                 }
                               />
                             </div>

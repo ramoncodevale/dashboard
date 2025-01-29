@@ -14,10 +14,10 @@ const Button: React.FC<ButtonProps> = ({
   variant = "primary",
 }) => {
   const baseStyles =
-    "cursor-pointer rounded-md  text-sm font-bold transition-all"
+    "cursor-pointer rounded-md  text-sm font-bold  transition-all"
   const variants = {
-    primary: "bg-[#0055cc] text-white",
-    danger: "bg-red-500 text-white hover:bg-red-600",
+    primary: "bg-blue-500 hover:bg-blue-600 text-white",
+    danger: "bg-red-500  text-white hover:bg-red-600",
   }
 
   return (
