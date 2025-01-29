@@ -7,7 +7,7 @@
 
 2. **Acesse a pasta do projeto:**
    ```bash
-   cd seu-repositorio
+   cd dashboard-drag
    ```
 
 3. **Instale as dependências:**
